@@ -119,8 +119,8 @@ commands = {
     "set_opt_power":    "c 4", # set optical power (requires power in mW, only if feedback diode integrated)
     "set_feedback_DAC": "c 6", # set feedback DAC value (value 0..8191)
     "set_fan_temp":     "c f", # set fan temperature in centidegC
-    "set_autostart":    "c a", # enable/disable autostart after power on (1 or 0)
-    "laser_output":     "e",   # start/stop laser (1/0)
+    "enable_autostart": "c a", # enable/disable autostart after power on (1 or 0)
+    "enable_laser":     "e",   # start/stop laser (1/0)
     "laser_warmup":     "e 2", # enable warm-up of laser (recommended for longevity)
     "save_changes":     "f s"  # save changes
 }
@@ -368,6 +368,28 @@ def set_fan_temp(s, settemp):
         print('please give a reasonable input temperature (2500-3500) as integer')
 
 
+def enable_autostart(s):
+    """enable autostart on power-on"""
+    if get_access_level(s) < 1:
+        print('not enough privilege, please update access level to 1 first')
+        return
+
+    errorcode = s.write((commands["enable_autostart"] + ' 1').encode())
+    reply = s.readline().decode('utf-8').strip()
+    check_reply(reply)
+
+
+def disable_autostart(s):
+    """disable autostart on power-on"""
+    if get_access_level(s) < 1:
+        print('not enough privilege, please update access level to 1 first')
+        return
+
+    errorcode = s.write((commands["enable_autostart"] + ' 0').encode())
+    reply = s.readline().decode('utf-8').strip()
+    check_reply(reply)
+
+
 def save_changes(s):
     """save changes"""
     if get_access_level(s) < 1:
@@ -383,14 +405,14 @@ def save_changes(s):
 
 def start_laser(s):
     """enable laser output"""
-    whatever = s.write((commands["laser_output"]+' 1').encode())
+    whatever = s.write((commands["enable_laser"]+' 1').encode())
     reply = s.readline().decode('utf-8').strip()
     check_reply(reply)
 
 
 def stop_laser(s):
     """disable laser output"""
-    errorcode = s.write((commands["laser_output"]+' 0').encode())
+    errorcode = s.write((commands["enable_laser"]+' 0').encode())
     reply = s.readline().decode('utf-8').strip()
     check_reply(reply)
 
