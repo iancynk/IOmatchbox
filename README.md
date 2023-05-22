@@ -1,9 +1,11 @@
 # IOmatchbox
-Functions and examples to control Integrated Optics CW lasers through serial commands with Python.
+Functions and examples to control Integrated Optics CW lasers and standalone TECs through serial commands with Python.
 
 The official software can be found on the [Supplier Download Site](https://integratedoptics.com/downloads)
 
-Documentation is also available through the same website. The serial commands have been taken from the User Manual (*MB_IO_2.5_Continuous_Wave_Laser_Users_Manual.pdf*)
+Documentation is also available through the same website. The serial commands have been taken from the User Manual (*MB_IO_2.5_Continuous_Wave_Laser_Users_Manual.pdf*).
+
+There is no official documentation for the Stand-alone Air Cooled Heatsink with TEC (AM-H09/10/11). Thus I just used the commands of the laser as far as they worked.
 
 ## Requirements
 Needs `serial` and `pyserial` (both of them are needed for this to work somehow), best installed through:
@@ -13,19 +15,19 @@ pip install serial pyserial
 
 
 ## Usage
-Download `IOmatchbox.py` and put it in your working directory. Then simply use the following commands to connect:
+Download `IOmatchbox.py` and put it in your working directory. Then simply use the following commands to connect
 ```
 import IOmatchbox as iom
 s = iom.openlaser()
 ```
-Get some more info with:
+Get some more info with
 ```
 iom.get_settings(s)
 iom.get_readings(s)
 iom.laser_status(s)
 ```
 
-Fire up the laser with:
+Fire up the laser with
 ```
 iom.start_laser(s)
 ```
@@ -35,7 +37,7 @@ Stop the laser with
 iom.stop_laser(s)
 ```
 
-Disconnect with:
+Disconnect with
 ```
 iom.closelaser(s)
 ```
@@ -45,7 +47,7 @@ To see all functions, simply use
 help(iom)
 ```
 
-More examples in [example.py](example.py)
+More examples in [example.py](example.py). Includes also commands to communicate with the TEC though they are still not complete.
 
 ## Access Codes
 Most setting changes require a change of access level which can be done with

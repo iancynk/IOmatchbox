@@ -8,6 +8,7 @@
 # %% --------------------------------------------------------------------------
 # imports
 import IOmatchbox as iom
+import IOTEC as iot
 import time
 import matplotlib.pyplot as plt
 
@@ -50,8 +51,35 @@ iom.set_diode_temp(s, 3205)
 # turn off laser
 iom.stop_laser(s)
 
-# %% --------------------------------------------------------------------------
 # disconnect laser
 iom.closelaser(s)
 
+# %% --------------------------------------------------------------------------
+# connect TEC
+t = iot.openTEC()
+iot.get_settings(t)
+iot.get_readings(t)
+iot.TEC_status(t)
+iot.get_TEC_set_temp(t)
+
+iot.enable_TEC(t)
+
+# read temperature continuously
+for n in range(10):
+    iot.get_TEC_temp(t)
+    iot.get_TEC_load(t)
+    time.sleep(1)
+
+# change user access level
+iot.set_access_level(t, 1)
+
+# change TEC setpoint
+iot.set_TEC_temp(t, 2490)
+
+# turn off laser
+iot.disable_TEC(t)
+
+# %% --------------------------------------------------------------------------
+# disconnect laser
+iot.closeTEC(t)
 # EOF --------------------------------------------------------------------------
