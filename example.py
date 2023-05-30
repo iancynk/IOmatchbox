@@ -10,8 +10,6 @@
 import IOmatchbox as iom
 import IOTEC as iot
 import time
-import matplotlib.pyplot as plt
-
 
 # %% --------------------------------------------------------------------------
 # connect laser
@@ -59,6 +57,7 @@ iom.closelaser(s)
 t = iot.openTEC()
 iot.get_settings(t)
 iot.get_readings(t)
+iot.get_info(t)
 iot.TEC_status(t)
 iot.get_TEC_set_temp(t)
 

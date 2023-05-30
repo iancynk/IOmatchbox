@@ -241,7 +241,7 @@ def set_access_level(s, level):
         try:
             code = int(input_code)
         except ValueError:
-            print('please input a 4-5 digit number as access level code')
+            print('please input a 5 digit number as access level code')
             return
     else:
         print('invalid access level, please choose a number in [0..3]')

@@ -113,6 +113,7 @@ commands = {
     "get_readings":     "r r", # receive readings
     "get_om":           "r m", # receive operating mode (APC/ACC)
     "get_info":         "r i", # receive TEC information
+    "get_optime":       "r t", # receive operating hours/switching times
     "get_access_level": "r l", # receive access level
     "set_access_level": "c u", # change access level (requires number and code)
     "set_TEC_temp":     "c f", # set fan temperature in centidegC
@@ -180,6 +181,23 @@ def get_info(s, output=False):
         return reply
 
 
+def get_optime(s, output=False):
+    """receive laser operation time
+    if output=True, will spill the whole string with info, otherwise only returns it
+    """
+    whatever = s.write(commands["get_optime"].encode())
+    # output comes in two lines, combine it to one list
+    reply1 = s.readline().decode('utf-8').strip()[:-1]  # remove trailing dot
+    reply2 = s.readline().decode('utf-8').strip()
+    reply = reply1 + ', ' + reply2
+    if output:
+        print('operating hours and how many times the laser diode has been turned on')
+        print(reply)
+        return
+    else:
+        return reply
+
+
 def get_access_level(s):
     """receive access level"""
     whatever = s.write(commands["get_access_level"].encode())
@@ -203,7 +221,7 @@ def set_access_level(s, level):
         try:
             code = int(input_code)
         except ValueError:
-            print('please input a 4-5 digit number as access level code')
+            print('please input a 5 digit number as access level code')
             return
     else:
         print('invalid access level, please choose a number in [0..3]')
@@ -243,9 +261,11 @@ def enable_autostart(s):
         print('not enough privilege, please update access level to 1 first')
         return
 
-    errorcode = s.write((commands["enable_autostart"] + ' 1').encode())
-    reply = s.readline().decode('utf-8').strip()
-    check_reply(reply)
+    # errorcode = s.write((commands["enable_autostart"] + ' 1').encode())
+    # reply = s.readline().decode('utf-8').strip()
+    # check_reply(reply)
+    print("Do not use Autostart! It will just heat your base plate without any regulation.")
+    print("You're welcome. Glad I could save your laser.")
 
 
 def disable_autostart(s):
@@ -350,5 +370,26 @@ def get_driver_version(s):
     """get driver version from information"""
     driver_version = get_info(s).split('  ')[0]
     print(driver_version)
+
+
+def get_optime2(s):
+    """get operating time from information (also has a separate serial command)"""
+    optime = get_info(s).split('  ')[3]
+    print('operating time: ', optime[:-1])  #remove trailing dot
+
+
+def get_switch_times(s):
+    """get switch times from information (could also be gotten through optime command)"""
+    switch_times = get_info(s).split('  ')[4]
+    print('laser diode turned on ', switch_times)
+
+# %% ---------------------------------------------------------------------------
+# send command
+
+def send_command(s, command):
+    """send an arbitrary command"""
+    whatever = s.write(command.encode())
+    reply = s.readline().decode('utf-8').strip()
+    print(reply)
 
 # EOF --------------------------------------------------------------------------
