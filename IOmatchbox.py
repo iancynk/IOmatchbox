@@ -226,26 +226,28 @@ def get_access_level(s):
     return access_level
 
 
-def set_access_level(s, level):
+def set_access_level(s, level, input_code=''):
     """change user access level (default level over serial is 0)
     requires setting the correct codes that need to be obtained from the supplier (level 2-3)
     """
     if level == 0:
         print('cannot return to access level 0')
         return
-    elif level == 1:
-        input_code = '1234'  # code supplied in user manual
-    elif (level == 2) or (level == 3):
-        input_code = input('please input access level code for level ' + str(level) + '\n')
-        # check if code is numerical
-        try:
-            code = int(input_code)
-        except ValueError:
-            print('please input a 5 digit number as access level code')
+    
+    if not input_code:
+        if level == 1:
+            input_code = '1234'  # code supplied in user manual
+        elif (level == 2) or (level == 3):
+            input_code = input('please input access level code for level ' + str(level) + '\n')
+            # check if code is numerical
+            try:
+                code = int(input_code)
+            except ValueError:
+                print('please input a 5 digit number as access level code')
+                return
+        else:
+            print('invalid access level, please choose a number in [0..3]')
             return
-    else:
-        print('invalid access level, please choose a number in [0..3]')
-        return
 
     command = commands["set_access_level"]+' ' + str(level) + ' ' + input_code
     whatever = s.write(command.encode())
@@ -493,8 +495,10 @@ def is_off(s):
     status = get_readings(s).split()[7]
     if status == "OFF":
         print('laser is off')
+        return True
     else:
         print('laser is not off, status:', status)
+        return False
 
 
 def get_fan_load(s):
