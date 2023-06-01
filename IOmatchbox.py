@@ -346,7 +346,7 @@ def set_DAC_value(s, setvalue):
     
     old_setvalue = get_DAC_set_value(s)
     if (setvalue > 0) & (setvalue <= 8191):
-        whatever = s.write((commands["set_feedback_DAC"]+ ' ' + str(setcurr)).encode())
+        whatever = s.write((commands["set_feedback_DAC"]+ ' ' + str(setvalue)).encode())
         reply = s.readline().decode('utf-8').strip()
         check_reply(reply)
         new_setvalue = get_DAC_set_value(s)
