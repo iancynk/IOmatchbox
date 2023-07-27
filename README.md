@@ -49,6 +49,9 @@ help(iom)
 
 More examples in [example.py](example.py). Includes also commands to communicate with the TEC though they are still not complete.
 
+**Warning:** Do NOT enable autostart of the TEC. It will just start heating at maximum power no matter what is the setpoint. This is a serious bug and will kill your laser. 
+
+
 ## Access Codes
 Most setting changes require a change of access level which can be done with
 ```
