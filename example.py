@@ -7,78 +7,85 @@
 # scripted by ian cynk (ian.cynk@posteo.eu) 2023
 # %% --------------------------------------------------------------------------
 # imports
-import IOmatchbox as iom
-import IOTEC as iot
 import time
+# if local file:
+from IOmatchbox import IOM
+import IOTEC as iot
+# if installed via pip
+from IOmatchbox.IOmatchbox import IOM
+from IOmatchbox.IOTEC import IOT
 
 # %% --------------------------------------------------------------------------
 # connect laser
-s = iom.openlaser()
+iom = IOM()
+iom = IOM(port='/dev/ttyUSB0')  # connect laser with specified port
 
-iom.get_productcode(s)
+iom.get_productcode()
 
-iom.get_settings(s)
+iom.get_settings()
 
-iom.get_readings(s)
+iom.get_readings()
 
-iom.laser_status(s)
+iom.laser_status()
 
-iom.get_laser_model(s)
+iom.get_laser_model()
 
-iom.start_laser(s)
+iom.start_laser()
 
 # read diode temperature continuously
 for n in range(10):
-    iom.get_diode_temp(s)
-    iom.get_diode_current(s)
-    iom.get_base_temp_num(s)
+    iom.get_diode_temp()
+    iom.get_diode_current()
+    iom.get_base_temp_num()
     time.sleep(1)
 
 # change user access level
-iom.set_access_level(s, 1)
+iom.set_access_level(1)
 
 # read and change feedback DAC value
-iom.get_DAC_set_value(s)
-iom.set_DAC_value(s, 1000)
+iom.get_DAC_set_value()
+iom.set_DAC_value(1000)
 
 # read and change diode temperature
-iom.get_diode_set_temp(s)
-iom.set_access_level(s, 3)  # requires code from supplier
-iom.set_diode_temp(s, 3205)
+iom.get_diode_set_temp()
+iom.set_access_level(3)  # requires code from supplier
+iom.set_diode_temp(3205)
 
 # turn off laser
-iom.stop_laser(s)
+iom.stop_laser()
 
 # disconnect laser
-iom.closelaser(s)
+iom.closelaser()
 
 # %% --------------------------------------------------------------------------
 # connect TEC
-t = iot.openTEC()
-iot.get_settings(t)
-iot.get_readings(t)
-iot.get_info(t)
-iot.TEC_status(t)
-iot.get_TEC_set_temp(t)
+iot = IOT()
+iot = IOT(port='/dev/ttyUSB1')  # connect TEC with specified port
 
-iot.enable_TEC(t)
+# get settings and status
+iot.get_settings()
+iot.get_readings()
+iot.get_info()
+iot.TEC_status()
+iot.get_TEC_set_temp()
+
+iot.enable_TEC()
 
 # read temperature continuously
 for n in range(10):
-    iot.get_TEC_temp(t)
-    iot.get_TEC_load(t)
+    iot.get_TEC_temp()
+    iot.get_TEC_load()
     time.sleep(1)
 
 # change user access level
-iot.set_access_level(t, 1)
+iot.set_access_level(1)
 
 # change TEC setpoint
-iot.set_TEC_temp(t, 2490)
+iot.set_TEC_temp(2490)
 
-# turn off laser
-iot.disable_TEC(t)
+# disable TEC
+iot.disable_TEC()
 
-# %% --------------------------------------------------------------------------
-# disconnect laser
-iot.closeTEC(t)
+# disconnect TEC
+iot.closeTEC()
 # EOF --------------------------------------------------------------------------
