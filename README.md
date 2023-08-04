@@ -13,33 +13,52 @@ Needs `serial` and `pyserial` (both of them are needed for this to work somehow)
 pip install serial pyserial
 ```
 
-
 ## Usage
-Download `IOmatchbox.py` and put it in your working directory. Then simply use the following commands to connect
+### Pip
+Simply run
 ```
-import IOmatchbox as iom
-s = iom.openlaser()
+pip install IOmatchbox
 ```
+Then in your Python script invoke the functions by
+```
+from IOmatchbox.IOmatchbox import IOM
+from IOmatchbox.IOTEC import IOT
+iom = IOM()
+iot = IOT()
+```
+With `iom` you can then call all functions and methods of the laser, with `iot` you can communicate with the external TEC.
+
+### Download only file
+Download [IOmatchbox.py](src/IOmatchbox/IOmatchbox.py) and [IOTEC.py](src/IOmatchox/IOTEC.py) and put them in your working directory. 
+
+Then in your Python script invoke the functions by
+```
+from IOmatchbox import IOM
+from IOTEC import IOT
+iom = IOM()
+iot = IOT()
+```
+
 Get some more info with
 ```
-iom.get_settings(s)
-iom.get_readings(s)
-iom.laser_status(s)
+iom.get_settings()
+iom.get_readings()
+iom.laser_status()
 ```
 
 Fire up the laser with
 ```
-iom.start_laser(s)
+iom.start_laser()
 ```
 
 Stop the laser with
 ```
-iom.stop_laser(s)
+iom.stop_laser()
 ```
 
 Disconnect with
 ```
-iom.closelaser(s)
+iom.closelaser()
 ```
 
 To see all functions, simply use
@@ -55,7 +74,7 @@ More examples in [example.py](example.py). Includes also commands to communicate
 ## Access Codes
 Most setting changes require a change of access level which can be done with
 ```
-iom.set_access_level(s, 3)
+iom.set_access_level(3)
 ```
 However, you need a 5-digit access code for level 2 and 3 that you need to request from the supplier. Level 1 can be accessed by default.
 
@@ -75,5 +94,3 @@ This is under development but I hope it will be helpful for fellow users. Commen
 ## License
 This project is licensed under the MIT license.
 
-## Acknowledgement
-You're welcome!
