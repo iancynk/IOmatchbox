@@ -62,7 +62,7 @@ class IOT():
     # --------------------------------------------------------------------------
     # serial functions
     
-    def openTEC(port=''):
+    def openTEC(self, port=''):
         """create a serial connection with the recommended parameters
         if no port is given the function will try all available serial ports
         and check whether the connected device has an ID like an IO laser. 
