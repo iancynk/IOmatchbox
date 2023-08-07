@@ -76,13 +76,23 @@ class IOM():
         if not port:
             # find available ports depending on operating system
             if sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
-                available_ports = glob.glob('/dev/ttyUSB*')
+                # look for the id of the UART controller
+                available_ports = glob.glob('/dev/serial/by-id/*CP2102N*')
+                if available_ports == '':
+                    # look for all USB ports
+                    available_ports = glob.glob('/dev/ttyUSB*')
+                print('available ports:', available_ports)
             elif sys.platform.startswith('win'):
                 available_ports = ['COM%s' % (i + 1) for i in range(256)]
             else:
                 raise EnvironmentError('Unsupported platform')
         else:
             available_ports = [port]
+        
+        if not available_ports:
+            print('no serial port selected, aborting')
+            self.ser = None
+            return
         
         # try to open the ports until one works
         for port in available_ports:
