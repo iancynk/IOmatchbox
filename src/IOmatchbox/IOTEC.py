@@ -96,7 +96,7 @@ class IOT():
                 print('failed at port', port)
                 continue
             # check if the selected port has an IO TEC by querying info
-            whatever = self.ser.write("r i".encode())
+            _ = self.ser.write("r i".encode())
 
             # check if the info contains "ExternalTEC"
             try:
@@ -152,7 +152,7 @@ class IOT():
         """receive TEC settings
         if output=True, will spill the whole string with info, otherwise only returns it
         """
-        whatever = self.ser.write(cmds["get_settings"].encode())
+        _ = self.ser.write(cmds["get_settings"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         if output:
             print('Settings: min temp?, max temp?, 0, 255, nan, \
@@ -167,7 +167,7 @@ class IOT():
         """receive TEC readings
         if output=True, will spill the whole string with info, otherwise only returns it
         """
-        whatever = self.ser.write(cmds["get_readings"].encode())
+        _ = self.ser.write(cmds["get_readings"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         if output:
             print('Readings: some temperature, some temperature, TEC temperature, current, \
@@ -180,7 +180,7 @@ class IOT():
     
     def get_om(self):
         """receive operation mode (APC/ACC)"""
-        whatever = self.ser.write(cmds["get_om"].encode())
+        _ = self.ser.write(cmds["get_om"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         print('operation mode:', reply)
     
@@ -189,7 +189,7 @@ class IOT():
         """receive TEC information
         if output=True, will spill the whole string with info, otherwise only returns it
         """
-        whatever = self.ser.write(cmds["get_info"].encode())
+        _ = self.ser.write(cmds["get_info"].encode())
         # output comes in five lines, combine it to one list
         reply = ''
         for i in range(5):
@@ -207,7 +207,7 @@ class IOT():
         """receive laser operation time
         if output=True, will spill the whole string with info, otherwise only returns it
         """
-        whatever = self.ser.write(cmds["get_optime"].encode())
+        _ = self.ser.write(cmds["get_optime"].encode())
         # output comes in two lines, combine it to one list
         reply1 = self.ser.readline().decode('utf-8').strip()[:-1]  # remove trailing dot
         reply2 = self.ser.readline().decode('utf-8').strip()
@@ -222,7 +222,7 @@ class IOT():
     
     def get_access_level(self):
         """receive access level"""
-        whatever = self.ser.write(cmds["get_access_level"].encode())
+        _ = self.ser.write(cmds["get_access_level"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         access_level = int(reply.split()[2])
         return access_level
@@ -250,7 +250,7 @@ class IOT():
             return
     
         cmd = cmds["set_access_level"]+' ' + str(level) + ' ' + input_code
-        whatever = self.ser.write(cmd.encode())
+        _ = self.ser.write(cmd.encode())
         reply = self.ser.readline().decode('utf-8').strip()
         # check if access level code worked
         if reply == '<ERR 4>':
@@ -269,7 +269,7 @@ class IOT():
         
         old_settemp = self.get_TEC_set_temp()
         if (settemp > 2000) & (settemp < 3000):
-            whatever = self.ser.write((cmds["set_TEC_temp"]+ ' ' + str(settemp)).encode())
+            _ = self.ser.write((cmds["set_TEC_temp"]+ ' ' + str(settemp)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
             new_settemp = self.get_TEC_set_temp()
@@ -317,7 +317,7 @@ class IOT():
     
     def enable_TEC(self):
         """enable TEC"""
-        whatever = self.ser.write((cmds["enable_TEC"]+' 1').encode())
+        _ = self.ser.write((cmds["enable_TEC"]+' 1').encode())
         reply = self.ser.readline().decode('utf-8').strip()
         self.check_reply(reply)
     
@@ -411,7 +411,7 @@ class IOT():
     
     def send_cmd(self, cmd):
         """send an arbitrary cmd"""
-        whatever = self.ser.write(cmd.encode())
+        _ = self.ser.write(cmd.encode())
         reply = self.ser.readline().decode('utf-8').strip()
         print(reply)
 

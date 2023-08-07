@@ -95,7 +95,7 @@ class IOM():
                 print('failed at port', port)
                 continue
             # check if the selected port has an IO laser by querying the ID
-            whatever = self.ser.write("NM?".encode())
+            _ = self.ser.write("NM?".encode())
             # check if the ID contains numbers at [1:4]
             try:
                 reply = self.ser.readline().decode('utf-8').strip()
@@ -154,14 +154,14 @@ class IOM():
     
     def get_ID(self):
         """get module ID"""
-        whatever = self.ser.write(self.cmds["product_ID"].encode())
+        _ = self.ser.write(self.cmds["product_ID"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         print('product ID:', reply[1:-1])
     
     
     def get_productcode(self):
         """get module product code"""
-        whatever = self.ser.write(self.cmds["product_code"].encode())
+        _ = self.ser.write(self.cmds["product_code"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         print('product code:', reply[1:-1])
     
@@ -170,7 +170,7 @@ class IOM():
         """receive laser settings
         if output=True, will spill the whole string with info, otherwise only returns it
         """
-        whatever = self.ser.write(self.cmds["get_settings"].encode())
+        _ = self.ser.write(self.cmds["get_settings"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         if output:
             print('Settings: crystal set temp, laser diode set temperature, \
@@ -186,7 +186,7 @@ class IOM():
         """receive laser readings
         if output=True, will spill the whole string with info, otherwise only returns it
         """
-        whatever = self.ser.write(self.cmds["get_readings"].encode())
+        _ = self.ser.write(self.cmds["get_readings"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         if output:
             print('Readings:laser diode temperature, crystal temperature (negative if there is no crystal), \
@@ -200,7 +200,7 @@ class IOM():
     
     def get_om(self):
         """receive operation mode (APC/ACC)"""
-        whatever = self.ser.write(self.cmds["get_om"].encode())
+        _ = self.ser.write(self.cmds["get_om"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         print('operation mode:', reply)
     
@@ -209,7 +209,7 @@ class IOM():
         """receive laser information
         if output=True, will spill the whole string with info, otherwise only returns it
         """
-        whatever = self.ser.write(self.cmds["get_info"].encode())
+        _ = self.ser.write(self.cmds["get_info"].encode())
         # output comes in five lines, combine it to one list
         reply = ''
         for i in range(5):
@@ -228,7 +228,7 @@ class IOM():
         """receive laser operation time
         if output=True, will spill the whole string with info, otherwise only returns it
         """
-        whatever = self.ser.write(self.cmds["get_optime"].encode())
+        _ = self.ser.write(self.cmds["get_optime"].encode())
         # output comes in two lines, combine it to one list
         reply1 = self.ser.readline().decode('utf-8').strip()[:-1]  # remove trailing dot
         reply2 = self.ser.readline().decode('utf-8').strip()
@@ -243,7 +243,7 @@ class IOM():
     
     def get_access_level(self):
         """receive access level"""
-        whatever = self.ser.write(self.cmds["get_access_level"].encode())
+        _ = self.ser.write(self.cmds["get_access_level"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         access_level = int(reply.split()[2])
         return access_level
@@ -273,7 +273,7 @@ class IOM():
                 return
 
         cmd = self.cmds["set_access_level"]+' ' + str(level) + ' ' + input_code
-        whatever = self.ser.write(cmd.encode())
+        _ = self.ser.write(cmd.encode())
         reply = self.ser.readline().decode('utf-8').strip()
         # check if access level code worked
         if reply == '<ERR 4>':
@@ -299,7 +299,7 @@ class IOM():
         
         old_settemp = self.get_crystal_set_temp()
         if (settemp > 2500) & (settemp < 3500):
-            whatever = self.ser.write((self.cmds["set_crystal_temp"]+ ' ' + str(settemp)).encode())
+            _ = self.ser.write((self.cmds["set_crystal_temp"]+ ' ' + str(settemp)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
             new_settemp = self.get_crystal_set_temp()
@@ -316,7 +316,7 @@ class IOM():
         currtemp = self.get_diode_temp_num()
         old_settemp = self.get_diode_set_temp()
         if (settemp > 2500) & (settemp < 3500):
-            whatever = self.ser.write((self.cmds["set_diode_temp"]+ ' ' + str(settemp)).encode())
+            _ = self.ser.write((self.cmds["set_diode_temp"]+ ' ' + str(settemp)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
             new_settemp = self.get_diode_set_temp()
@@ -334,7 +334,7 @@ class IOM():
         old_setcurr = self.get_diode_set_current()
         currlimit = self.get_diode_current_limit()
         if setcurr <= currlimit:
-            whatever = self.ser.write((self.cmds["set_diode_current"]+ ' ' + str(setcurr)).encode())
+            _ = self.ser.write((self.cmds["set_diode_current"]+ ' ' + str(setcurr)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
             new_setcurr = self.get_diode_set_current()
@@ -354,7 +354,7 @@ class IOM():
         if oldsetpower == 'nan':
             print('sorry, optical power can not be changed on this device')
         else:
-            whatever = self.ser.write((self.cmds["set_opt_power"] + ' ' + str(setpower)).encode())
+            _ = self.ser.write((self.cmds["set_opt_power"] + ' ' + str(setpower)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
             newsetpower = self.get_opt_set_power()
@@ -369,7 +369,7 @@ class IOM():
         
         old_setvalue = self.get_DAC_set_value()
         if (setvalue > 0) & (setvalue <= 8191):
-            whatever = self.ser.write((self.cmds["set_feedback_DAC"]+ ' ' + str(setvalue)).encode())
+            _ = self.ser.write((self.cmds["set_feedback_DAC"]+ ' ' + str(setvalue)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
             new_setvalue = self.get_DAC_set_value()
@@ -385,7 +385,7 @@ class IOM():
         
         old_settemp = self.get_fan_set_temp()
         if (settemp > 2500) & (settemp < 3500):
-            whatever = self.ser.write((self.cmds["set_fan_temp"]+ ' ' + str(settemp)).encode())
+            _ = self.ser.write((self.cmds["set_fan_temp"]+ ' ' + str(settemp)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
             new_settemp = self.get_fan_set_temp()
@@ -430,7 +430,7 @@ class IOM():
     
     def start_laser(self):
         """enable laser output"""
-        whatever = self.ser.write((self.cmds["enable_laser"]+' 1').encode())
+        _ = self.ser.write((self.cmds["enable_laser"]+' 1').encode())
         reply = self.ser.readline().decode('utf-8').strip()
         self.check_reply(reply)
     
