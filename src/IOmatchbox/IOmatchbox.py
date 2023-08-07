@@ -71,7 +71,7 @@ class IOM():
         self.ser.bytesize = serial.EIGHTBITS
         self.ser.parity = serial.PARITY_NONE
         self.ser.stopbits = serial.STOPBITS_ONE
-        self.ser.timeout = 5
+        self.ser.timeout = 2
         # self.ser.rtscts = True # enable hardware (TRS/CTS) flow control
         if not port:
             # find available ports depending on operating system
@@ -99,7 +99,6 @@ class IOM():
             # check if the ID contains numbers at [1:4]
             try:
                 reply = self.ser.readline().decode('utf-8').strip()
-                print(reply)
                 int(reply[1:4])
                 print('connected to:', reply[1:-1])
                 break
@@ -109,16 +108,29 @@ class IOM():
                 print('not a IO CW laser')
                 pass
         
-        # check if connection is open
-        if not self.ser.is_open:
-            print('opening serial port failed')
-            self.ser = None
+        if self.DEBUG:
+            if self.ser.is_open:
+                print('port', self.ser.port, 'opened')
         return
+    
+    
+    def port_is_open(self):
+        """check whether serial port is open
+        returns false if port is closed or not a serial port
+        """
+        try: 
+            if not self.ser.is_open:
+                print('serial port not open')
+                return False
+        except AttributeError:
+            print('no serial stage connected, ignoring command')
+            return False
+        return True
     
     
     def closelaser(self):
         """close serial connection"""
-        if not self.ser.is_open: print('no serial connection'); return
+        if not self.port_is_open(): return
         self.ser.close()
         if not self.ser.is_open:
             print('connection closed')

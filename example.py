@@ -8,12 +8,7 @@
 # %% --------------------------------------------------------------------------
 # imports
 import time
-# if local file:
-from IOmatchbox import IOM
-import IOTEC as iot
-# if installed via pip
-from IOmatchbox.IOmatchbox import IOM
-from IOmatchbox.IOTEC import IOT
+from IOmatchbox import IOM, IOT
 
 # %% --------------------------------------------------------------------------
 # connect laser

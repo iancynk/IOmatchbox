@@ -14,30 +14,17 @@ pip install serial pyserial
 ```
 
 ## Usage
-### Pip
 Simply run
 ```
 pip install IOmatchbox
 ```
 Then in your Python script invoke the functions by
 ```
-from IOmatchbox.IOmatchbox import IOM
-from IOmatchbox.IOTEC import IOT
+from IOmatchbox import IOM, IOT
 iom = IOM()
 iot = IOT()
 ```
 With `iom` you can then call all functions and methods of the laser, with `iot` you can communicate with the external TEC.
-
-### Download only file
-Download [IOmatchbox.py](src/IOmatchbox/IOmatchbox.py) and [IOTEC.py](src/IOmatchox/IOTEC.py) and put them in your working directory. 
-
-Then in your Python script invoke the functions by
-```
-from IOmatchbox import IOM
-from IOTEC import IOT
-iom = IOM()
-iot = IOT()
-```
 
 Get some more info with
 ```

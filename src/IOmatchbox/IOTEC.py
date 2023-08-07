@@ -72,7 +72,7 @@ class IOT():
         self.ser.bytesize = serial.EIGHTBITS
         self.ser.parity = serial.PARITY_NONE
         self.ser.stopbits = serial.STOPBITS_ONE
-        self.ser.timeout = 5
+        self.ser.timeout = 2
         # self.ser.rtscts = True # enable hardware (TRS/CTS) flow control
         if not port:
             # find available ports depending on operating system
@@ -102,27 +102,43 @@ class IOT():
             try:
                 # output comes in five lines, combine it to one string
                 reply = ''
+                self.ser.timeout = 0.5  # reduce timeout to not block channel too long
                 for i in range(5):
                     reply += self.ser.readline().decode('utf-8', 'ignore').strip() + '  '
                 if reply[0:11] == "ExternalTEC":
                     print('connected to', reply[0:11])
-                break
+                    self.ser.timeout = 2
+                else:
+                    self.ser.close()
             except:
                 self.ser.close()
                 time.sleep(0.1)
                 print('not a IO TEC')
                 pass
-
-        # check if connection is open
-        if not self.ser.is_open:
-            print('opening serial port failed')
-            self.ser = None
+        
+        if self.DEBUG:
+            if self.ser.is_open:
+                print('port', self.ser.port, 'opened')
         return
+    
+    
+    def port_is_open(self):
+        """check whether serial port is open
+        returns false if port is closed or not a serial port
+        """
+        try: 
+            if not self.ser.is_open:
+                print('serial port not open')
+                return False
+        except AttributeError:
+            print('no serial stage connected, ignoring command')
+            return False
+        return True
     
     
     def closeTEC(self):
         """close serial connection"""
-        if not self.ser.is_open: print('no serial connection'); return
+        if not self.port_is_open(): return
         self.ser.close()
         if not self.ser.is_open:
             print('connection closed')
@@ -152,7 +168,7 @@ class IOT():
         """receive TEC settings
         if output=True, will spill the whole string with info, otherwise only returns it
         """
-        _ = self.ser.write(cmds["get_settings"].encode())
+        _ = self.ser.write(self.cmds["get_settings"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         if output:
             print('Settings: min temp?, max temp?, 0, 255, nan, \
@@ -167,7 +183,7 @@ class IOT():
         """receive TEC readings
         if output=True, will spill the whole string with info, otherwise only returns it
         """
-        _ = self.ser.write(cmds["get_readings"].encode())
+        _ = self.ser.write(self.cmds["get_readings"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         if output:
             print('Readings: some temperature, some temperature, TEC temperature, current, \
@@ -180,7 +196,7 @@ class IOT():
     
     def get_om(self):
         """receive operation mode (APC/ACC)"""
-        _ = self.ser.write(cmds["get_om"].encode())
+        _ = self.ser.write(self.cmds["get_om"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         print('operation mode:', reply)
     
@@ -189,7 +205,7 @@ class IOT():
         """receive TEC information
         if output=True, will spill the whole string with info, otherwise only returns it
         """
-        _ = self.ser.write(cmds["get_info"].encode())
+        _ = self.ser.write(self.cmds["get_info"].encode())
         # output comes in five lines, combine it to one list
         reply = ''
         for i in range(5):
@@ -207,7 +223,7 @@ class IOT():
         """receive laser operation time
         if output=True, will spill the whole string with info, otherwise only returns it
         """
-        _ = self.ser.write(cmds["get_optime"].encode())
+        _ = self.ser.write(self.cmds["get_optime"].encode())
         # output comes in two lines, combine it to one list
         reply1 = self.ser.readline().decode('utf-8').strip()[:-1]  # remove trailing dot
         reply2 = self.ser.readline().decode('utf-8').strip()
@@ -222,7 +238,7 @@ class IOT():
     
     def get_access_level(self):
         """receive access level"""
-        _ = self.ser.write(cmds["get_access_level"].encode())
+        _ = self.ser.write(self.cmds["get_access_level"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         access_level = int(reply.split()[2])
         return access_level
@@ -248,7 +264,7 @@ class IOT():
         else:
             print('invalid access level, please choose a number in [0..3]')
             return
-    
+        
         cmd = cmds["set_access_level"]+' ' + str(level) + ' ' + input_code
         _ = self.ser.write(cmd.encode())
         reply = self.ser.readline().decode('utf-8').strip()
@@ -269,7 +285,7 @@ class IOT():
         
         old_settemp = self.get_TEC_set_temp()
         if (settemp > 2000) & (settemp < 3000):
-            _ = self.ser.write((cmds["set_TEC_temp"]+ ' ' + str(settemp)).encode())
+            _ = self.ser.write((self.cmds["set_TEC_temp"]+ ' ' + str(settemp)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
             new_settemp = self.get_TEC_set_temp()
@@ -283,7 +299,7 @@ class IOT():
             print('not enough privilege, please update access level to 1 first')
             return
         
-        # errorcode = self.ser.write((cmds["enable_autostart"] + ' 1').encode())
+        # errorcode = self.ser.write((self.cmds["enable_autostart"] + ' 1').encode())
         # reply = self.ser.readline().decode('utf-8').strip()
         # self.check_reply(reply)
         print("Do not use Autostart! It will just heat your base plate without any regulation.")
@@ -295,8 +311,8 @@ class IOT():
         if self.get_access_level() < 1:
             print('not enough privilege, please update access level to 1 first')
             return
-    
-        errorcode = self.ser.write((cmds["enable_autostart"] + ' 0').encode())
+        
+        errorcode = self.ser.write((self.cmds["enable_autostart"] + ' 0').encode())
         reply = self.ser.readline().decode('utf-8').strip()
         self.check_reply(reply)
     
@@ -306,8 +322,8 @@ class IOT():
         if self.get_access_level() < 1:
             print('not enough privilege, please update access level to 1 first')
             return
-    
-        errorcode = self.ser.write(cmds["save_changes"].encode())
+        
+        errorcode = self.ser.write(self.cmds["save_changes"].encode())
         reply = self.ser.readline().decode('utf-8').strip()
         self.check_reply(reply)
     
@@ -317,14 +333,14 @@ class IOT():
     
     def enable_TEC(self):
         """enable TEC"""
-        _ = self.ser.write((cmds["enable_TEC"]+' 1').encode())
+        _ = self.ser.write((self.cmds["enable_TEC"]+' 1').encode())
         reply = self.ser.readline().decode('utf-8').strip()
         self.check_reply(reply)
     
     
     def disable_TEC(self):
         """disable TEC"""
-        errorcode = self.ser.write((cmds["enable_TEC"]+' 0').encode())
+        errorcode = self.ser.write((self.cmds["enable_TEC"]+' 0').encode())
         reply = self.ser.readline().decode('utf-8').strip()
         self.check_reply(reply)
     
