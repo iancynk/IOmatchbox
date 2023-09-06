@@ -37,25 +37,25 @@ class IOM():
 
     def check_reply(self, reply):
         """interpret reply/errorcode according to manual"""
-        if reply == '<ACK>':
-            print('acknowledged')
-        elif reply == '<ERR 0>':
-            print('0 - error name not assigned yet')
-        elif reply == '<ERR 1>':
-            print('1 - command forbidden for current access level')
-        elif reply == '<ERR 2>':
-            print('2 - laser already on or making ramp-up')
-        elif reply == '<ERR 3>':
-            print('3 - laser busy, task is not complete please wait for 1 s and try again')
-        elif reply == '<ERR 4>':
-            print('4 - arguments out of range')
-        elif reply == '<ERR 5>':
-            print('5 - unknown command')
-        elif reply == '<ERR 6>':
-            print('6 - laser must be enabled to execute this command')
-        else:
-            print('unknown reply:', reply)
-        return
+        match reply:
+            case '<ACK>':
+                print('acknowledged')
+            case '<ERR 0>':
+                print('0 - error name not assigned yet')
+            case '<ERR 1>':
+                print('1 - command forbidden for current access level')
+            case '<ERR 2>':
+                print('2 - laser already on or making ramp-up')
+            case '<ERR 3>':
+                print('3 - laser busy, task is not complete please wait for 1 s and try again')
+            case '<ERR 4>':
+                print('4 - arguments out of range')
+            case '<ERR 5>':
+                print('5 - unknown command')
+            case '<ERR 6>':
+                print('6 - laser must be enabled to execute this command')
+            case _:
+                print('unknown reply:', reply)
     
     
     # --------------------------------------------------------------------------
