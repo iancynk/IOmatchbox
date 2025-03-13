@@ -31,7 +31,7 @@ class IOT():
     
     
     def __str__(self):
-        return f"Is a serial instance of a IO TEC."
+        return "Is a serial instance of a IO TEC."
         self.get_info()
     # --------------------------------------------------------------------------
     # communication functions
@@ -274,7 +274,7 @@ class IOT():
             print('invalid access level, please choose a number in [0..3]')
             return
         
-        cmd = cmds["set_access_level"]+' ' + str(level) + ' ' + input_code
+        cmd = self.cmds["set_access_level"]+' ' + str(level) + ' ' + input_code
         _ = self.ser.write(cmd.encode())
         reply = self.ser.readline().decode('utf-8').strip()
         # check if access level code worked
@@ -282,7 +282,7 @@ class IOT():
             print('invalid code to unlock access level', str(level), ': ', input_code)
         else:
             self.check_reply(reply)
-        print('Access level:', str(get_access_level()))
+        print('Access level:', str(self.get_access_level()))
     # --------------------------------------------------------------------------
     # modify settings
     
