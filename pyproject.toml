@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "IOmatchbox"
-version = "0.24"
+version = "0.25"
 authors = [
   { name="iancynk", email="ian.cynk@posteo.eu" },
 ]

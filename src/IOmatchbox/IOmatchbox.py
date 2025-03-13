@@ -30,7 +30,7 @@ class IOM():
     
     
     def __str__(self):
-        return f"Is a serial instance of a IO laser."
+        return "Is a serial instance of a IO laser."
         self.get_info()
     # --------------------------------------------------------------------------
     # communication functions
@@ -101,7 +101,7 @@ class IOM():
                 self.ser.port = port
                 self.ser.open()
                 time.sleep(0.1)
-            except:
+            except FileNotFoundError:
                 print('failed at port', port)
                 continue
             # check if the selected port has an IO laser by querying the ID
@@ -112,7 +112,7 @@ class IOM():
                 int(reply[1:4])
                 print('connected to:', reply[1:-1])
                 break
-            except:
+            except FileNotFoundError:
                 self.ser.close()
                 time.sleep(0.1)
                 print('not a IO CW laser')
@@ -286,7 +286,7 @@ class IOM():
                 input_code = input('please input access level code for level ' + str(level) + '\n')
                 # check if code is numerical
                 try:
-                    code = int(input_code)
+                    input_code = int(input_code)
                 except ValueError:
                     print('please input a 5 digit number as access level code')
                     return
@@ -294,15 +294,22 @@ class IOM():
                 print('invalid access level, please choose a number in [0..3]')
                 return
 
-        cmd = self.cmds["set_access_level"]+' ' + str(level) + ' ' + input_code
+        cmd = self.cmds["set_access_level"]+' ' + str(level) + ' ' + str(input_code)
         _ = self.ser.write(cmd.encode())
         reply = self.ser.readline().decode('utf-8').strip()
         # check if access level code worked
         if reply == '<ERR 4>':
             print('invalid code to unlock access level', str(level), ': ', input_code)
         else:
-            self.check_reply(reply)
-        print('Access level:', str(self.get_access_level()))
+            try:
+                self.check_reply(reply)
+            except:
+                reply = self.ser.readline().decode('utf-8').strip()
+                self.check_reply(reply)
+        try:
+            print('Access level:', str(self.get_access_level()))
+        except:
+            self.ser.readline().decode('utf-8').strip()
     
     # --------------------------------------------------------------------------
     # modify settings
@@ -319,12 +326,12 @@ class IOM():
             print('no crystal, ignoring input')
             return
         
-        old_settemp = self.get_crystal_set_temp()
+        # old_settemp = self.get_crystal_set_temp()
         if (settemp > 2500) & (settemp < 3500):
             _ = self.ser.write((self.cmds["set_crystal_temp"]+ ' ' + str(settemp)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
-            new_settemp = self.get_crystal_set_temp()
+            # new_settemp = self.get_crystal_set_temp()
         else:
             print('please give a reasonable input temperature (2500-3500) as integer')
     
@@ -335,13 +342,13 @@ class IOM():
             print('not enough privilege, please update access level to 3 first')
             return
         
-        currtemp = self.get_diode_temp_num()
-        old_settemp = self.get_diode_set_temp()
+        # currtemp = self.get_diode_temp_num()
+        # old_settemp = self.get_diode_set_temp()
         if (settemp > 2500) & (settemp < 3500):
             _ = self.ser.write((self.cmds["set_diode_temp"]+ ' ' + str(settemp)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
-            new_settemp = self.get_diode_set_temp()
+            # new_settemp = self.get_diode_set_temp()
         else:
             print('please give a reasonable input temperature (2500-3500) as integer')
     
@@ -352,14 +359,14 @@ class IOM():
             print('not enough privilege, please update access level to 3 first')
             return
         
-        currcurr = self.get_diode_current()
-        old_setcurr = self.get_diode_set_current()
-        currlimit = self.get_diode_current_limit()
+        # currcurr = self.get_diode_current()
+        # old_setcurr = self.get_diode_set_current()
+        currlimit = int(self.get_diode_current_limit())
         if setcurr <= currlimit:
             _ = self.ser.write((self.cmds["set_diode_current"]+ ' ' + str(setcurr)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
-            new_setcurr = self.get_diode_set_current()
+            # new_setcurr = self.get_diode_set_current()
         elif setcurr > currlimit:
             print('current larger than diode current limit, please set a current less than', currlimit, 'mA')
         else:
@@ -379,7 +386,7 @@ class IOM():
             _ = self.ser.write((self.cmds["set_opt_power"] + ' ' + str(setpower)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
-            newsetpower = self.get_opt_set_power()
+            # newsetpower = self.get_opt_set_power()
         return
     
     
@@ -389,12 +396,12 @@ class IOM():
             print('not enough privilege, please update access level to 1 first')
             return
         
-        old_setvalue = self.get_DAC_set_value()
+        # old_setvalue = self.get_DAC_set_value()
         if (setvalue > 0) & (setvalue <= 8191):
             _ = self.ser.write((self.cmds["set_feedback_DAC"]+ ' ' + str(setvalue)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
-            new_setvalue = self.get_DAC_set_value()
+            # new_setvalue = self.get_DAC_set_value()
         else:
             print('please give a reasonable input value [0..8191]')
     
@@ -405,12 +412,12 @@ class IOM():
             print('not enough privilege, please update access level to 1 first')
             return
         
-        old_settemp = self.get_fan_set_temp()
+        # old_settemp = self.get_fan_set_temp()
         if (settemp > 2500) & (settemp < 3500):
             _ = self.ser.write((self.cmds["set_fan_temp"]+ ' ' + str(settemp)).encode())
             reply = self.ser.readline().decode('utf-8').strip()
             self.check_reply(reply)
-            new_settemp = self.get_fan_set_temp()
+            # new_settemp = self.get_fan_set_temp()
         else:
             print('please give a reasonable input temperature (2500-3500) as integer')
     
